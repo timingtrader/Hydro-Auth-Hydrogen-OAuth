@@ -20,6 +20,10 @@ const contractAddress = '0xEFb8Ba35C4C502EA9035e093F59925C4B5B61482'; //contract
 const web3 = new Web3(ethAddress); // using web3.js version 1.0.0-beta.28, node v8.9.1, npm 5.5.1
 const HydroContract = new web3.eth.Contract(abi, contractAddress);
 
+const oauthBaseUrl = 'https://sandbox.hydrogenplatform.com/authorization/v2'; //baseurl for oauth API
+const authPartnerUsername = 'front_end_testing'; //(plug in your own)
+const authPartnerKey = 'front_end_testing'; //(plug in your own)
+
 let hydro_address_id = '96b043ba-a27c-44bb-af56-9e933cc94802'; //demo hydro_address_id from whitelisting
 let amount;
 let challenge;
@@ -67,6 +71,11 @@ async function main() {
         //check if authenticated via Hydro API
         console.log(chalk.magentaBright('checking if we are authenticated...'));
         await checkIfAuthenticated();
+
+        //authenticate with Oauth API
+        console.log(chalk.magentaBright('authenticating with OAuth API...'));
+        await authenticateWithOauthApi();
+
         return;
 
     }
@@ -174,6 +183,28 @@ async function checkIfAuthenticated() {
     try {
         const isAuthenticated = await authenticatedWithHydro();
         console.log(chalk.greenBright('Are we authenticated with the Hydro API?'), isAuthenticated.authenticated)
+    }
+    catch (error) {
+        return Promise.reject(error);
+    }
+
+}
+
+async function authenticateWithOauthApi() {
+
+    try {
+        const auth = new Buffer(authPartnerUsername + ':' + authPartnerKey).toString('base64')
+        const options = {
+            method: 'POST',
+            uri: `${oauthBaseUrl}/oauth/token?grant_type=client_credentials`,
+            headers: {
+              'Authorization': `Basic ${auth}`
+            },
+            json: true
+        };
+        const token = await request(options);
+        console.log(chalk.greenBright('And the access token is....'), token)
+
     }
     catch (error) {
         return Promise.reject(error);
