@@ -1,4 +1,5 @@
 # Sample app with web3.js for Project Hydro
+## Hydro Auth + Hydrogen OAuth
 <img src="https://www.hydrogenplatform.com/images/logo_hydro.png">
 <H1>Installation</H1>
 <p>
